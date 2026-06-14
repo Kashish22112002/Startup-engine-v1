@@ -8,11 +8,14 @@ from datetime import datetime
 def get_llm_provider():
     anthropic_key = os.getenv("ANTHROPIC_API_KEY")
     openai_key = os.getenv("OPENAI_API_KEY")
-    
+    openrouter_key = os.getenv("OPENROUTER_API_KEY")
+
     if anthropic_key and "your_" not in anthropic_key:
         return "anthropic", anthropic_key
     elif openai_key and "your_" not in openai_key:
         return "openai", openai_key
+    elif openrouter_key and "your_" not in openrouter_key:
+        return "openrouter", openrouter_key
     return None, None
 
 def call_anthropic(api_key, system_prompt, user_prompt, max_tokens=1500):
@@ -64,6 +67,34 @@ def call_openai(api_key, system_prompt, user_prompt, max_tokens=1500):
         print(f"OpenAI API Error: {e.code} - {e.read().decode('utf-8')}")
         raise e
 
+
+def call_openrouter(api_key, system_prompt, user_prompt, max_tokens=1500):
+    """OpenRouter uses the OpenAI-compatible chat completions API."""
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "content-type": "application/json",
+        "HTTP-Referer": "https://startupeng.vercel.app",
+        "X-Title": "Reddit Pain-Point Miner"
+    }
+    data = {
+        "model": "mistralai/mistral-7b-instruct",   # free-tier model on OpenRouter
+        "max_tokens": max_tokens,
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+    }
+
+    req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers, method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as response:
+            res_data = json.loads(response.read().decode("utf-8"))
+            return res_data["choices"][0]["message"]["content"]
+    except urllib.error.HTTPError as e:
+        print(f"OpenRouter API Error: {e.code} - {e.read().decode('utf-8')}")
+        raise e
+
 def analyze_pain_points_with_llm(texts):
     """
     Classifies a list of texts and returns the index of those containing complaints.
@@ -83,8 +114,10 @@ def analyze_pain_points_with_llm(texts):
         try:
             if provider == "anthropic":
                 res = call_anthropic(api_key, system_prompt, user_prompt, max_tokens=500)
-            else:
+            elif provider == "openai":
                 res = call_openai(api_key, system_prompt, user_prompt, max_tokens=500)
+            else:
+                res = call_openrouter(api_key, system_prompt, user_prompt, max_tokens=500)
             
             # Extract JSON array
             import re
@@ -126,8 +159,10 @@ def summarize_cluster_with_llm(texts):
         try:
             if provider == "anthropic":
                 res = call_anthropic(api_key, system_prompt, user_prompt, max_tokens=800)
-            else:
+            elif provider == "openai":
                 res = call_openai(api_key, system_prompt, user_prompt, max_tokens=800)
+            else:
+                res = call_openrouter(api_key, system_prompt, user_prompt, max_tokens=800)
             
             import re
             json_match = re.search(r"\{.*\}", res, re.DOTALL)
@@ -188,8 +223,10 @@ def generate_validation_report_with_llm(idea_name, idea_description, target_nich
         try:
             if provider == "anthropic":
                 res = call_anthropic(api_key, system_prompt, user_prompt, max_tokens=1500)
-            else:
+            elif provider == "openai":
                 res = call_openai(api_key, system_prompt, user_prompt, max_tokens=1500)
+            else:
+                res = call_openrouter(api_key, system_prompt, user_prompt, max_tokens=1500)
             
             import re
             json_match = re.search(r"\{.*\}", res, re.DOTALL)
