@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Pain-Point Miner & Startup Idea Validator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="8" fill="url(#brand-grad)" />
+                    <path d="M16 8C11.58 8 8 11.58 8 16C8 17.58 8.46 19.06 9.25 20.31L7 25L11.88 23.59C13.06 24.47 14.5 25 16 25C20.42 25 24 21.42 24 16C24 11.58 20.42 8 16 8ZM17 20H15V18H17V20ZM17 16H15V11H17V16Z" fill="white" />
+                    <defs>
+                        <linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#8B5CF6" />
+                            <stop offset="1" stop-color="#06B6D4" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="brand-text">
+                    <h1>AETHER</h1>
+                    <span>Market Miner</span>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-tab="miner-tab">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    Niche Miner
+                </button>
+                <button class="nav-item" data-tab="validator-tab">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    Idea Validator
+                </button>
+                <button class="nav-item" data-tab="history-tab">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Saved Reports
+                </button>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="status-indicator live" id="live-indicator">
+                    <span class="pulse-dot"></span>
+                    <span class="status-label">Simulation Mode</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- TAB 1: Niche Miner -->
+            <section id="miner-tab" class="tab-content active">
+                <div class="header-section">
+                    <h2>Subreddit Pain-Point Miner</h2>
+                    <p>Scrape subreddits, identify user complaints, and cluster repeating friction themes.</p>
+                </div>
+
+                <div class="card search-card">
+                    <form id="miner-form" class="miner-form">
+                        <div class="form-group flex-1">
+                            <label for="subreddit-input">Subreddit Niche</label>
+                            <div class="input-wrapper">
+                                <span class="prefix">r/</span>
+                                <input type="text" id="subreddit-input" placeholder="e.g., smallbusiness, freelance, webdev" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="lookback-slider">Lookback: <span id="lookback-val">30</span> days</label>
+                            <input type="range" id="lookback-slider" min="7" max="90" value="30" class="slider">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-glow">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+                            Analyze Niche
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Mining Progress State -->
+                <div id="miner-loading" class="loading-container hidden">
+                    <div class="spinner-wrapper">
+                        <div class="spinner"></div>
+                    </div>
+                    <div class="loading-steps">
+                        <div class="step active" id="step-connect">Connecting to Reddit API...</div>
+                        <div class="step" id="step-fetch">Scraping recent discussion threads...</div>
+                        <div class="step" id="step-analyze">Analyzing posts & comments for pain signals...</div>
+                        <div class="step" id="step-cluster">Clustering matching concerns into themes...</div>
+                    </div>
+                </div>
+
+                <!-- Mining Results -->
+                <div id="miner-results" class="results-container hidden">
+                    <h3 class="section-title">Discovered Pain-Point Clusters</h3>
+                    <div class="clusters-grid" id="clusters-list">
+                        <!-- Dynamic cluster cards -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: Idea Validator -->
+            <section id="validator-tab" class="tab-content">
+                <div class="header-section">
+                    <h2>Startup Idea Validator</h2>
+                    <p>Cross-reference your idea against real customer discussions to compute market demand.</p>
+                </div>
+
+                <div class="card form-card">
+                    <form id="validator-form" class="grid-form">
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label for="idea-name">Startup/Product Name</label>
+                                <input type="text" id="idea-name" placeholder="e.g., RemindFlow, LeadScraper" required>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label for="idea-niche">Target Niche/Audience</label>
+                                <input type="text" id="idea-niche" placeholder="e.g., freelance consultants, boutique agencies" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="idea-description">Idea Description (What does it do? How does it solve the pain?)</label>
+                            <textarea id="idea-description" rows="3" placeholder="e.g., An automated invoice reminder tool that pings clients via Slack or WhatsApp with customized, firm follow-up logic to reduce payment delays." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-glow width-fit">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                            Validate Demand
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Validator Progress State -->
+                <div id="validator-loading" class="loading-container hidden">
+                    <div class="spinner-wrapper">
+                        <div class="spinner"></div>
+                    </div>
+                    <div class="loading-steps">
+                        <div class="step active" id="val-step-db">Scanning historical database...</div>
+                        <div class="step" id="val-step-live">Searching live Reddit context...</div>
+                        <div class="step" id="val-step-score">Calculating five-factor Demand Score...</div>
+                        <div class="step" id="val-step-report">Generating detail analysis report...</div>
+                    </div>
+                </div>
+
+                <!-- Validation Results -->
+                <div id="validator-results" class="validation-results-container hidden">
+                    <div class="results-header-grid">
+                        <!-- Gauge Card -->
+                        <div class="card gauge-card flex-center">
+                            <div class="radial-progress-wrapper">
+                                <svg class="radial-svg" width="160" height="160" viewBox="0 0 160 160">
+                                    <circle class="radial-bg" cx="80" cy="80" r="70"></circle>
+                                    <circle class="radial-fill" id="gauge-fill" cx="80" cy="80" r="70" stroke-dasharray="440" stroke-dashoffset="440"></circle>
+                                </svg>
+                                <div class="radial-text">
+                                    <span class="score-num" id="score-display">0</span>
+                                    <span class="score-label">Demand Score</span>
+                                </div>
+                            </div>
+                            <div class="score-verdict" id="verdict-display">Moderate Signal</div>
+                        </div>
+                        
+                        <!-- Score Breakdown Card -->
+                        <div class="card breakdown-card">
+                            <h4>Composite Score Breakdown</h4>
+                            <div class="breakdown-list">
+                                <div class="breakdown-item">
+                                    <div class="breakdown-meta">
+                                        <span>Mention Frequency</span>
+                                        <span id="breakdown-freq-num">0%</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill" id="breakdown-freq-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="breakdown-item">
+                                    <div class="breakdown-meta">
+                                        <span>Pain Intensity</span>
+                                        <span id="breakdown-intensity-num">0%</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill" id="breakdown-intensity-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="breakdown-item">
+                                    <div class="breakdown-meta">
+                                        <span>Engagement Density</span>
+                                        <span id="breakdown-engagement-num">0%</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill" id="breakdown-engagement-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="breakdown-item">
+                                    <div class="breakdown-meta">
+                                        <span>Solution Gap</span>
+                                        <span id="breakdown-gap-num">0%</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill" id="breakdown-gap-bar" style="width: 0%"></div></div>
+                                </div>
+                                <div class="breakdown-item">
+                                    <div class="breakdown-meta">
+                                        <span>Trend Direction</span>
+                                        <span id="breakdown-trend-num">0%</span>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill" id="breakdown-trend-bar" style="width: 0%"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Markdown Content -->
+                    <div class="card report-card">
+                        <div class="report-header">
+                            <h3>Validation Feasibility Report</h3>
+                            <button id="btn-export-report" class="btn btn-secondary btn-sm">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Copy Report Markdown
+                            </button>
+                        </div>
+                        <div class="report-markdown-body" id="report-md-content">
+                            <!-- Dynamic Markdown Content -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: Saved Reports -->
+            <section id="history-tab" class="tab-content">
+                <div class="header-section">
+                    <h2>Historical Database</h2>
+                    <p>Browse previously completed subreddit mining campaigns and validation reports.</p>
+                </div>
+
+                <div class="history-split-grid">
+                    <!-- Column 1: Mined Niches -->
+                    <div class="card history-column">
+                        <h3>Mined Subreddits</h3>
+                        <div class="history-list" id="mined-niches-list">
+                            <div class="empty-state">No niches scanned yet.</div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Validation Reports -->
+                    <div class="card history-column">
+                        <h3>Idea Validations</h3>
+                        <div class="history-list" id="validation-reports-list">
+                            <div class="empty-state">No validation reports generated yet.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Script loading -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
